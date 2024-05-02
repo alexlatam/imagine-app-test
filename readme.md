@@ -24,3 +24,16 @@ Run the project
 ```bash
 php index.php
 ```
+
+## Another way to run the project
+
+Change for another branch
+```bash
+git checkout feature/lab-format
+```
+
+and run the same steps as above.
+
+NOTE:
+This branch contains the same functionality as the master branch, but is using the LAB space [another color concept].
+And the code is using another structure. Using Value Object, Exceptions, Service or Use Case.
