@@ -1,48 +1,35 @@
 <?php
+declare(strict_types=1);
 
 namespace ImagineApp\Services;
 
+use ImagineApp\ValueObjects\Color;
+
+/**
+ * This class is responsible for calculating the difference between two colors.
+ * This class could be a use case[Application Service] in a real-world application.
+ * This class could be injected into a controller or another service.
+ */
 final class ColorsService {
-    private function hexToRgb(string $hexColor): array {
-        $hexColor = trim($hexColor, '#');
-        return sscanf($hexColor, "%2x%2x%2x");
-    }
 
-    private function rgbToHex($r, $g, $b): string {
-        $hex = "#";
-        $hex .= str_pad(dechex($r), 2, "0", STR_PAD_LEFT);
-        $hex .= str_pad(dechex($g), 2, "0", STR_PAD_LEFT);
-        $hex .= str_pad(dechex($b), 2, "0", STR_PAD_LEFT);
-        return $hex;
-    }
+    /**
+     * As a best practice, we should inject the dependencies into the constructor.
+     * In this case, we are injecting the ColorRepository dependency for store the result.
+     */
+    # public gifunction __construct(private readonly ColorRepository $colorRepository) {}
 
-    private function calculateComplementaryColor(string $hexColor): string {
-        // convert hex color to RGB
-        list($r, $g, $b) = $this->hexToRgb($hexColor);
-
-        // Calculate the complementary color
-        $compR = 255 - $r;
-        $compG = 255 - $g;
-        $compB = 255 - $b;
-
-        return $this->rgbToHex($compR, $compG, $compB);
-    }
-
-    public function colorDifference(string $color1, string $color2): float|int
+    public function colorDifference(Color $color1, Color $color2): float|int
     {
-        // get complementary color of color1
-        $compColor = $this->calculateComplementaryColor($color1);
+        $complementaryColor = $color1->calculateComplementaryColor();
 
-        // convert hex color to RGB
-        list($r1, $g1, $b1) = $this->hexToRgb($compColor);
-        list($r2, $g2, $b2) = $this->hexToRgb($color2);
+        list($l1, $a1, $b1) = $complementaryColor->hexToLab();
+        list($l2, $a2, $b2) = $color2->hexToLab();
 
-        // calculate the difference between the two colors in RGB space
-        $diffR = abs($r1 - $r2);
-        $diffG = abs($g1 - $g2);
-        $diffB = abs($b1 - $b2);
+        // calculate the Euclidean distance between the two colors
+        $distance = sqrt(pow($l2 - $l1, 2) + pow($a2 - $a1, 2) + pow($b2 - $b1, 2));
 
-        // calculate the average difference
-        return 1 - (($diffR + $diffG + $diffB) / 3) / 100;
+        // normalize the distance to a score between 0 and 1
+        $max_distance = sqrt(pow(100, 2) + pow(128, 2) + pow(128, 2));
+        return 1 - ($distance / $max_distance);
     }
 }
