@@ -1,0 +1,16 @@
+{
+    "name": "alexis/imagine-app-test",
+    "description": "this is a repo for the Imgine Apps company",
+    "autoload": {
+        "psr-4": {
+            "ImagineApp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexis Montilla",
+            "email": "alexisamm9261@gmail.com"
+        }
+    ],
+    "require": {}
+}
